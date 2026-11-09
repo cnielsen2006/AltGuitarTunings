@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guitar tunings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #e7ebe6;
+  --ink: #18221d;
+  --muted: #55625a;
+  --panel: #f6f7f3;
+  --chip: #eef1ec;
+  --line: #c6cec5;
+  --accent: #2a52c4;
+  --sans: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111715;
+    --ink: #e5eae4;
+    --muted: #93a299;
+    --panel: #1a211e;
+    --chip: #232c28;
+    --line: #2f3b36;
+    --accent: #93b2ff;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111715;
+  --ink: #e5eae4;
+  --muted: #93a299;
+  --panel: #1a211e;
+  --chip: #232c28;
+  --line: #2f3b36;
+  --accent: #93b2ff;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.wrap { max-width: 1200px; margin: 0 auto; padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 40px) 56px; }
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.lede { margin: 0 0 clamp(20px, 3vw, 36px); max-width: 56ch; font-family: var(--serif); font-size: 1.15rem; color: var(--muted); }
+
+.layout { display: grid; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); gap: clamp(20px, 3vw, 44px); align-items: start; }
+.list h2 { margin: 22px 0 4px; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+.list h2:first-child { margin-top: 0; }
+.tuning {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  font: inherit; color: inherit; background: transparent;
+  border: 0; border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+.tuning:hover { background: var(--chip); }
+.tuning:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tuning[aria-pressed="true"] { background: var(--panel); box-shadow: inset 4px 0 0 var(--accent); }
+.tuning .name { display: block; font-weight: 600; }
+.tuning .notes { display: flex; gap: 10px; font-size: 0.95rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tuning .notes span { min-width: 1.6em; }
+.tuning .notes .chg { color: var(--accent); font-weight: 800; }
+
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: clamp(16px, 2.4vw, 28px); min-width: 0; }
+@media (min-width: 861px) {
+  .stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+}
+.stage h2 { margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+.stage .seq { margin: 6px 0 0; font-size: 1.15rem; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; }
+.stage .desc { margin: 10px 0 18px; max-width: 62ch; font-family: var(--serif); font-size: 1.1rem; line-height: 1.5; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 0 0 12px; }
+.btn {
+  font: inherit; font-weight: 600; cursor: pointer;
+  background: var(--accent); color: var(--panel);
+  border: 0; border-radius: 8px; padding: 8px 18px;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: var(--chip); color: var(--ink); border: 1px solid var(--line); padding: 7px 16px; }
+.btn:disabled { opacity: 0.45; cursor: default; filter: none; }
+.btn:focus-visible, .toggle input:focus-visible, td select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.chord { margin: 0 0 12px; font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.chord .nm { color: var(--accent); }
+.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.hint { margin: 0; font-size: 0.9rem; color: var(--muted); }
+
+.neck { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+.neck svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.neck text { font-family: var(--sans); }
+.board { fill: url(#wood); }
+.fretwire { stroke: #aeb2b7; stroke-width: 2.5; }
+.nut { fill: #efe7d2; }
+.inlay { fill: #efe7d2; opacity: 0.85; }
+.str { stroke: #dfe2e5; }
+.wound { stroke: #7b8189; stroke-dasharray: 1 2; }
+.fretnum { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+.lab { cursor: pointer; }
+.lab rect { fill: var(--chip); stroke: var(--line); stroke-width: 1.5; }
+.lab:hover rect { stroke: var(--accent); }
+.lab:focus { outline: none; }
+.lab:focus-visible rect { stroke: var(--accent); stroke-width: 3; }
+.lab .nt { fill: var(--ink); font-size: 19px; font-weight: 800; text-anchor: middle; }
+.lab .oc { font-size: 11px; font-weight: 600; fill: var(--muted); }
+.shift { fill: var(--accent); font-size: 13px; font-weight: 800; text-anchor: end; }
+.dot { cursor: pointer; }
+.dot circle { fill: #5b3b28; }
+.dot text { fill: #f1e6d3; font-size: 11px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.dot.match circle { fill: #9db8ff; }
+.dot.match text { fill: #0e1b45; font-weight: 800; }
+.dot:hover circle { stroke: #fff; stroke-width: 1.5; }
+.dot.quiet circle { fill: transparent; }
+.dot.quiet:hover circle { fill: rgba(255, 255, 255, 0.22); stroke: none; }
+.dot.on circle { fill: #f0b44c; stroke: #fff; stroke-width: 2; }
+.dot.on text { fill: #2a1a05; font-weight: 800; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .string.ring { animation: ring 0.6s ease-out; }
+}
+@keyframes ring {
+  0% { transform: translateY(0); }
+  10% { transform: translateY(-2.4px); }
+  20% { transform: translateY(2.2px); }
+  30% { transform: translateY(-1.7px); }
+  40% { transform: translateY(1.3px); }
+  55% { transform: translateY(-0.8px); }
+  70% { transform: translateY(0.4px); }
+  100% { transform: none; }
+}
+
+.tablewrap { overflow-x: auto; margin-top: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 600; color: var(--muted); }
+tbody th { font-weight: 600; }
+td.note { font-weight: 800; font-size: 1.05rem; }
+td.chg { color: var(--accent); }
+td select {
+  font: inherit; font-size: 0.9rem; color: var(--ink); background: var(--chip);
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px 4px; cursor: pointer;
+}
+.foot { margin: 14px 0 0; font-size: 0.88rem; color: var(--muted); max-width: 70ch; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .stage { order: -1; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Guitar tunings</h1>
+  <p class="lede">Pick a tuning to see each string’s note and how far it moves from standard. Click a string label to hear it. Click a fret to press that string there (one fret per string), then strum the chord.</p>
+
+  <div class="layout">
+    <nav class="list" id="list" aria-label="Tunings"></nav>
+
+    <section class="stage" aria-label="Selected tuning">
+      <div aria-live="polite">
+        <h2 id="title"></h2>
+        <p class="seq" id="seq"></p>
+      </div>
+      <p class="desc" id="desc"></p>
+      <div class="controls">
+        <button class="btn" id="strum" type="button">Strum strings</button>
+        <label class="toggle"><input type="checkbox" id="slow"> Slow strum</label>
+        <label class="toggle"><input type="checkbox" id="shownotes"> Show notes on the frets</label>
+        <button class="btn ghost" id="clear" type="button" disabled>Release all frets</button>
+      </div>
+      <p class="chord" id="chord" aria-live="polite"></p>
+      <div class="neck" id="neck"></div>
+      <div class="tablewrap" id="tablewrap"></div>
+      <p class="foot">Strings run from 6 (lowest) to 1 (highest). Blue values show how many semitones a string moves from standard. Octave numbers use scientific pitch, where standard low E is E2. Amber dots are pressed frets: click one again to release it, or pick a fret in the table. Pressed frets stay in place when you switch tunings.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var FLAT = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+  var MIX  = ['C','C♯','D','E♭','E','F','F♯','G','G♯','A','B♭','B'];
+  var STD  = [40, 45, 50, 55, 59, 64];
+
+  var GROUPS = [
+    { title: 'Standard and tuned down', ids: ['standard', 'half-step', 'whole-step', 'baritone'] },
+    { title: 'Dropped', ids: ['drop-d', 'double-drop-d', 'drop-c'] },
+    { title: 'Open', ids: ['open-d', 'open-d-minor', 'open-g', 'open-e', 'open-a', 'open-c'] },
+    { title: 'Modal and alternative', ids: ['dadgad', 'new-standard'] }
+  ];
+
+  var TUNINGS = [
+    { id: 'standard', name: 'Standard E', midi: [40,45,50,55,59,64],
+      desc: 'The tuning most chord charts assume. Each string is a fourth above the last, except for a major third between the G and B strings.' },
+    { id: 'half-step', name: 'Half step down', flat: true, midi: [39,44,49,54,58,63],
+      desc: 'Every string lowered a semitone. Slightly slacker strings are easier to bend, and the lower pitch suits many singers.' },
+    { id: 'whole-step', name: 'Whole step down', midi: [38,43,48,53,57,62],
+      desc: 'Every string lowered two semitones, so the shapes you know sound a whole tone lower. A heavier, rounder sound.' },
+    { id: 'baritone', name: 'Baritone B', midi: [35,40,45,50,54,59],
+      desc: 'Standard shapes a fourth lower. It works best on a longer scale length, or with heavier strings to keep tension up.' },
+    { id: 'drop-d', name: 'Drop D', midi: [38,45,50,55,59,64],
+      desc: 'Only the lowest string moves, down a whole step to D. The bottom three strings now play a power chord with one finger.' },
+    { id: 'double-drop-d', name: 'Double drop D', midi: [38,45,50,55,59,62],
+      desc: 'Both E strings dropped to D. The open strings give you D at both ends, with a deep bass and a ringing treble.' },
+    { id: 'drop-c', name: 'Drop C', midi: [36,43,48,53,57,62],
+      desc: 'Drop D tuned down another whole step. A low, heavy tuning that keeps the one-finger power chord.' },
+    { id: 'open-d', name: 'Open D', midi: [38,45,50,54,57,62],
+      desc: 'Strumming the open strings sounds a D major chord. Common for slide playing and fingerstyle folk.' },
+    { id: 'open-d-minor', name: 'Open D minor', midi: [38,45,50,53,57,62],
+      desc: 'Open D with the F♯ lowered to F, so the open strings sound a D minor chord.' },
+    { id: 'open-g', name: 'Open G', midi: [38,43,50,55,59,62],
+      desc: 'The open strings sound a G major chord. A staple of slide and blues playing.' },
+    { id: 'open-e', name: 'Open E', midi: [40,47,52,56,59,64],
+      desc: 'The open strings sound an E major chord. Popular for slide, though it raises several strings, so lighter gauges help.' },
+    { id: 'open-a', name: 'Open A', midi: [40,45,52,57,61,64],
+      desc: 'The open strings sound an A major chord. The lowest, second-lowest and highest strings stay as they are in standard.' },
+    { id: 'open-c', name: 'Open C', midi: [36,43,48,55,60,64],
+      desc: 'The open strings sound a C major chord. A wide, resonant tuning with a very low bass string.' },
+    { id: 'dadgad', name: 'DADGAD', midi: [38,45,50,55,57,62],
+      desc: 'Neither major nor minor: the open strings sound a suspended D chord. Widely used for Celtic and modal folk music.' },
+    { id: 'new-standard', name: 'New standard', midi: [36,43,50,57,64,67],
+      desc: 'Strings in fifths, with a minor third at the top. Created by Robert Fripp for wide chords and even note spacing across the neck.' }
+  ];
+
+  var byId = {};
+  TUNINGS.forEach(function (t) { byId[t.id] = t; });
+
+  function noteName(m, flat) { return (flat ? FLAT : MIX)[m % 12]; }
+  function octave(m) { return Math.floor(m / 12) - 1; }
+  function freq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  function signed(n) { return n === 0 ? '0' : (n > 0 ? '+' + n : '−' + Math.abs(n)); }
+
+  var state = { id: 'standard', showNotes: false, slow: false, frets: [0, 0, 0, 0, 0, 0] };
+  var STRUM_GAP = { fast: 0.09, slow: 0.3 };
+
+  // Pitch-class sets relative to the root, as bitmasks (bit n = n semitones above root).
+  var CHORDS = [
+    [' major', [0,4,7]], [' minor', [0,3,7]], ['5', [0,7]], ['sus2', [0,2,7]], ['sus4', [0,5,7]],
+    ['dim', [0,3,6]], ['aug', [0,4,8]], ['6', [0,4,7,9]], ['m6', [0,3,7,9]], ['7', [0,4,7,10]],
+    ['maj7', [0,4,7,11]], ['m7', [0,3,7,10]], ['m(maj7)', [0,3,7,11]], ['dim7', [0,3,6,9]],
+    ['m7♭5', [0,3,6,10]], ['add9', [0,2,4,7]], ['m(add9)', [0,2,3,7]], ['7sus4', [0,5,7,10]],
+    ['6/9', [0,2,4,7,9]], ['9', [0,2,4,7,10]], ['maj9', [0,2,4,7,11]], ['m9', [0,2,3,7,10]]
+  ];
+  var CHORD_BY_MASK = {};
+  CHORDS.forEach(function (c) {
+    CHORD_BY_MASK[c[1].reduce(function (a, n) { return a | (1 << n); }, 0)] = c[0];
+  });
+
+  var SLASH_OK = { ' major': '', ' minor': 'm', '7': '7', 'maj7': 'maj7', 'm7': 'm7' };
+
+  function sounding(t) { return t.midi.map(function (m, i) { return m + state.frets[i]; }); }
+
+  // Name the chord, preferring the lowest note as the root; returns '' if nothing simple fits.
+  function chordName(notes, flat) {
+    var bass = Math.min.apply(null, notes);
+    var roots = [bass % 12];
+    notes.slice().sort(function (a, b) { return a - b; }).forEach(function (m) {
+      if (roots.indexOf(m % 12) < 0) roots.push(m % 12);
+    });
+    for (var r = 0; r < roots.length; r++) {
+      var mask = 0;
+      notes.forEach(function (m) { mask |= 1 << ((m - roots[r] + 12) % 12); });
+      var suffix = CHORD_BY_MASK[mask];
+      if (suffix === undefined) continue;
+      if (r === 0) return noteName(roots[r], flat) + suffix;
+      // Off-bass roots only count for plain triads and sevenths, written as slash chords (Am/E).
+      if (SLASH_OK[suffix] !== undefined) return noteName(roots[r], flat) + SLASH_OK[suffix] + '/' + noteName(bass, flat);
+    }
+    return '';
+  }
+
+  var listEl = document.getElementById('list');
+  var titleEl = document.getElementById('title');
+  var seqEl = document.getElementById('seq');
+  var descEl = document.getElementById('desc');
+  var neckEl = document.getElementById('neck');
+  var tableEl = document.getElementById('tablewrap');
+  var stageEl = document.querySelector('.stage');
+  var chordEl = document.getElementById('chord');
+  var clearBtn = document.getElementById('clear');
+
+  /* ---------- list ---------- */
+  function renderList() {
+    var html = '';
+    GROUPS.forEach(function (g) {
+      html += '<h2>' + g.title + '</h2>';
+      g.ids.forEach(function (id) {
+        var t = byId[id];
+        var notes = t.midi.map(function (m, i) {
+          var chg = m !== STD[i];
+          return '<span' + (chg ? ' class="chg"' : '') + '>' + noteName(m, t.flat) + '</span>';
+        }).join('');
+        html += '<button type="button" class="tuning" data-id="' + id + '" aria-pressed="false">' +
+          '<span class="name">' + t.name + '</span><span class="notes">' + notes + '</span></button>';
+      });
+    });
+    listEl.innerHTML = html;
+  }
+
+  /* ---------- neck ---------- */
+  var X0 = 100, L = 1720;
+  function fretX(n) { return X0 + L * (1 - Math.pow(2, -n / 12)); }
+  function stringY(i) { return 250 - 40 * i; }
+  var WIDTHS = [4.6, 3.6, 2.8, 2.0, 1.6, 1.2];
+
+  function neckSvg(t) {
+    var s = '<svg viewBox="0 0 1000 312" role="group" aria-label="Fretboard for ' + t.name + '">';
+    s += '<defs><linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">' +
+         '<stop offset="0" stop-color="#442a1b"/><stop offset="0.5" stop-color="#37221a"/><stop offset="1" stop-color="#2f1d13"/></linearGradient></defs>';
+    var end = fretX(12) + 24;
+    s += '<rect class="board" x="' + X0 + '" y="26" width="' + (end - X0) + '" height="248" rx="3"/>';
+
+    // inlays
+    [3, 5, 7, 9].forEach(function (n) {
+      s += '<circle class="inlay" cx="' + ((fretX(n - 1) + fretX(n)) / 2).toFixed(1) + '" cy="150" r="7"/>';
+    });
+    var mid12 = ((fretX(11) + fretX(12)) / 2).toFixed(1);
+    s += '<circle class="inlay" cx="' + mid12 + '" cy="110" r="7"/><circle class="inlay" cx="' + mid12 + '" cy="190" r="7"/>';
+
+    // frets and nut
+    for (var n = 1; n <= 12; n++) {
+      s += '<line class="fretwire" x1="' + fretX(n).toFixed(1) + '" y1="26" x2="' + fretX(n).toFixed(1) + '" y2="274"/>';
+    }
+    s += '<rect class="nut" x="' + (X0 - 6) + '" y="24" width="8" height="252" rx="1"/>';
+
+    // fret numbers
+    [3, 5, 7, 9, 12].forEach(function (n) {
+      s += '<text class="fretnum" x="' + ((fretX(n - 1) + fretX(n)) / 2).toFixed(1) + '" y="298">' + n + '</text>';
+    });
+
+    // strings
+    for (var i = 0; i < 6; i++) {
+      var y = stringY(i);
+      s += '<g class="string" data-i="' + i + '">' +
+           '<line class="str" x1="' + X0 + '" x2="' + (end - 6) + '" y1="' + y + '" y2="' + y + '" stroke-width="' + WIDTHS[i] + '"/>';
+      if (i < 3) {
+        s += '<line class="wound" x1="' + X0 + '" x2="' + (end - 6) + '" y1="' + y + '" y2="' + y + '" stroke-width="' + WIDTHS[i] + '"/>';
+      }
+      s += '</g>';
+    }
+
+    // fret positions: always clickable; labelled when notes are shown or the fret is pressed
+    var pcs = {};
+    t.midi.forEach(function (m) { pcs[m % 12] = true; });
+    for (var j = 0; j < 6; j++) {
+      for (var f = 1; f <= 12; f++) {
+        var m = t.midi[j] + f;
+        var on = state.frets[j] === f;
+        var cx = ((fretX(f - 1) + fretX(f)) / 2).toFixed(1);
+        var cls = on ? ' on' : (state.showNotes ? (pcs[m % 12] ? ' match' : '') : ' quiet');
+        s += '<g class="dot' + cls + '" data-play data-i="' + j + '" data-fret="' + f + '" data-m="' + m + '">' +
+             '<circle cx="' + cx + '" cy="' + stringY(j) + '" r="' + (on ? 13 : 12) + '"/>';
+        if (on || state.showNotes) {
+          s += '<text x="' + cx + '" y="' + (stringY(j) + 4) + '">' + noteName(m, t.flat) + '</text>';
+        }
+        s += '</g>';
+      }
+    }
+
+    // string labels (show the open note; clicking plays the string as currently fretted)
+    for (var k = 0; k < 6; k++) {
+      var mk = t.midi[k], yk = stringY(k), d = mk - STD[k];
+      var nm = noteName(mk, t.flat);
+      var ms = mk + state.frets[k], ns = noteName(ms, t.flat) + octave(ms);
+      var fretted = state.frets[k] ? ', fret ' + state.frets[k] : '';
+      s += '<g class="lab" data-play data-i="' + k + '" data-m="' + ms + '" role="button" tabindex="0" ' +
+           'aria-label="Play string ' + (6 - k) + ', ' + ns + fretted + '">' +
+           '<title>' + ns + ', ' + freq(ms).toFixed(1) + ' Hz' + fretted + '</title>' +
+           '<rect x="34" y="' + (yk - 15) + '" width="62" height="30" rx="8"/>' +
+           '<text class="nt" x="65" y="' + (yk + 7) + '">' + nm + '<tspan class="oc" dx="1" dy="3">' + octave(mk) + '</tspan></text>';
+      if (d !== 0) s += '<text class="shift" x="28" y="' + (yk + 5) + '">' + signed(d) + '</text>';
+      s += '</g>';
+    }
+    s += '</svg>';
+    return s;
+  }
+
+  function tableHtml(t) {
+    var head = '<tr><th scope="col">String</th>';
+    var notes = '<tr><th scope="row">Note</th>';
+    var hz = '<tr><th scope="row">Frequency (Hz)</th>';
+    var chg = '<tr><th scope="row">From standard (semitones)</th>';
+    for (var k = 0; k < 6; k++) {
+      var m = t.midi[k], d = m - STD[k];
+      head += '<th scope="col">' + (6 - k) + '</th>';
+      notes += '<td class="note">' + noteName(m, t.flat) + octave(m) + '</td>';
+      hz += '<td>' + freq(m).toFixed(1) + '</td>';
+      chg += '<td' + (d !== 0 ? ' class="chg"' : '') + '>' + signed(d) + '</td>';
+    }
+    var frets = '<tr><th scope="row">Fret pressed</th>';
+    var snd = '<tr><th scope="row">Sounding note</th>';
+    var opts = '<option value="0">Open</option>';
+    for (var f = 1; f <= 12; f++) opts += '<option value="' + f + '">' + f + '</option>';
+    for (var j = 0; j < 6; j++) {
+      frets += '<td><select data-fret-i="' + j + '" aria-label="Fret pressed on string ' + (6 - j) + '">' + opts + '</select></td>';
+      snd += '<td class="note" data-snd="' + j + '"></td>';
+    }
+    return '<table><thead>' + head + '</tr></thead><tbody>' + notes + '</tr>' + hz + '</tr>' + chg + '</tr>' +
+           frets + '</tr>' + snd + '</tr></tbody></table>';
+  }
+
+  // Refresh everything that depends on which frets are pressed, except the neck itself.
+  function syncFretting(t) {
+    var snd = sounding(t);
+    Array.prototype.forEach.call(tableEl.querySelectorAll('select[data-fret-i]'), function (sel) {
+      sel.value = String(state.frets[+sel.getAttribute('data-fret-i')]);
+    });
+    Array.prototype.forEach.call(tableEl.querySelectorAll('[data-snd]'), function (td) {
+      var i = +td.getAttribute('data-snd');
+      td.textContent = noteName(snd[i], t.flat) + octave(snd[i]);
+      td.classList.toggle('chg', state.frets[i] !== 0);
+    });
+    var names = snd.map(function (m) { return noteName(m, t.flat); }).join(' ');
+    var chord = chordName(snd, t.flat);
+    chordEl.innerHTML = 'Strum plays: ' + names + (chord ? ' · <span class="nm">' + chord + '</span>' : '');
+    clearBtn.disabled = !state.frets.some(function (f) { return f !== 0; });
+  }
+
+  function refreshFretting() {
+    var t = byId[state.id];
+    neckEl.innerHTML = neckSvg(t);
+    syncFretting(t);
+  }
+
+  function renderStage() {
+    var t = byId[state.id];
+    titleEl.textContent = t.name;
+    seqEl.textContent = t.midi.map(function (m) { return noteName(m, t.flat); }).join(' ');
+    descEl.textContent = t.desc;
+    neckEl.innerHTML = neckSvg(t);
+    tableEl.innerHTML = tableHtml(t);
+    syncFretting(t);
+    Array.prototype.forEach.call(listEl.querySelectorAll('.tuning'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-id') === state.id ? 'true' : 'false');
+    });
+    document.title = t.name + ' – Guitar tunings';
+  }
+
+  /* ---------- audio ---------- */
+  var ctx = null, cache = {};
+  function audio() {
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function buffer(m) {
+    if (cache[m]) return cache[m];
+    var sr = ctx.sampleRate, N = Math.max(2, Math.round(sr / freq(m)));
+    var len = Math.floor(sr * 3.2);
+    var buf = ctx.createBuffer(1, len, sr), out = buf.getChannelData(0);
+    var line = new Float32Array(N), i, p;
+    for (i = 0; i < N; i++) line[i] = Math.random() * 2 - 1;
+    for (p = 0; p < 2; p++) for (i = 0; i < N; i++) line[i] = (line[i] + line[(i + 1) % N]) / 2;
+    var idx = 0, peak = 0;
+    for (i = 0; i < len; i++) {
+      var a = line[idx], b = line[(idx + 1) % N];
+      out[i] = a;
+      line[idx] = (a + b) * 0.5 * 0.998;
+      idx = (idx + 1) % N;
+      if (Math.abs(a) > peak) peak = Math.abs(a);
+    }
+    if (peak > 0) for (i = 0; i < len; i++) out[i] /= peak;
+    cache[m] = buf;
+    return buf;
+  }
+  function play(m, delay) {
+    var c = audio();
+    if (!c) return;
+    var src = c.createBufferSource();
+    src.buffer = buffer(m);
+    var lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 4200;
+    var g = c.createGain();
+    var t0 = c.currentTime + (delay || 0);
+    g.gain.setValueAtTime(0.3, t0);
+    g.gain.setValueAtTime(0.3, t0 + 2.6);
+    g.gain.linearRampToValueAtTime(0, t0 + 3.1);
+    src.connect(lp); lp.connect(g); g.connect(c.destination);
+    src.start(t0);
+  }
+  function ring(i, delayMs) {
+    setTimeout(function () {
+      var el = neckEl.querySelector('.string[data-i="' + i + '"]');
+      if (!el) return;
+      el.classList.remove('ring');
+      void el.getBoundingClientRect();
+      el.classList.add('ring');
+    }, delayMs || 0);
+  }
+
+  /* ---------- events ---------- */
+  function select(id, fromHash) {
+    if (!byId[id]) return;
+    state.id = id;
+    renderStage();
+    if (!fromHash) {
+      try { history.replaceState(null, '', '#' + id); } catch (e) {}
+      if (window.matchMedia('(max-width: 860px)').matches) {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        stageEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  listEl.addEventListener('click', function (e) {
+    var b = e.target.closest('.tuning');
+    if (b) select(b.getAttribute('data-id'));
+  });
+
+  neckEl.addEventListener('click', function (e) {
+    var p = e.target.closest('[data-play]');
+    if (!p) return;
+    var i = parseInt(p.getAttribute('data-i'), 10);
+    var fret = p.getAttribute('data-fret');
+    if (fret !== null) {
+      // Press this fret, or release it if it is already pressed (one fret per string).
+      var f = parseInt(fret, 10);
+      state.frets[i] = state.frets[i] === f ? 0 : f;
+      refreshFretting();
+    }
+    play(byId[state.id].midi[i] + state.frets[i], 0);
+    ring(i, 0);
+  });
+  tableEl.addEventListener('change', function (e) {
+    var sel = e.target.closest('select[data-fret-i]');
+    if (!sel) return;
+    var i = parseInt(sel.getAttribute('data-fret-i'), 10);
+    state.frets[i] = parseInt(sel.value, 10);
+    refreshFretting();
+    play(byId[state.id].midi[i] + state.frets[i], 0);
+    ring(i, 0);
+  });
+  clearBtn.addEventListener('click', function () {
+    state.frets = [0, 0, 0, 0, 0, 0];
+    refreshFretting();
+  });
+  neckEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var p = e.target.closest('.lab');
+    if (!p) return;
+    e.preventDefault();
+    play(parseInt(p.getAttribute('data-m'), 10), 0);
+    ring(parseInt(p.getAttribute('data-i'), 10), 0);
+  });
+
+  document.getElementById('strum').addEventListener('click', function () {
+    var snd = sounding(byId[state.id]);
+    var gap = state.slow ? STRUM_GAP.slow : STRUM_GAP.fast;
+    for (var i = 0; i < 6; i++) {
+      play(snd[i], i * gap);
+      ring(i, i * gap * 1000);
+    }
+  });
+  document.getElementById('slow').addEventListener('change', function (e) {
+    state.slow = e.target.checked;
+  });
+  document.getElementById('shownotes').addEventListener('change', function (e) {
+    state.showNotes = e.target.checked;
+    refreshFretting();
+  });
+
+  window.addEventListener('hashchange', function () {
+    var h = location.hash.slice(1);
+    if (byId[h]) select(h, true);
+  });
+
+  renderList();
+  var start = location.hash.slice(1);
+  select(byId[start] ? start : 'standard', true);
+})();
+</script>
+</body>
+</html>
